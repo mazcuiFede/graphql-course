@@ -1,0 +1,28 @@
+{
+  "name": "graphql-course",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mazcuiFede/graphql-course.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mazcuiFede/graphql-course/issues"
+  },
+  "homepage": "https://github.com/mazcuiFede/graphql-course#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "express-graphql": "^0.12.0",
+    "graphiql": "^2.0.8",
+    "graphql": "^16.6.0",
+    "nodemon": "^2.0.20",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
