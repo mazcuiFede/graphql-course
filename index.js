@@ -1,6 +1,13 @@
 const schema = require('./schema/schema')
 const express = require('express');
 const {graphqlHTTP} = require('express-graphql');
+const mongoose = require('mongoose')
+
+mongoose.connect('mongodb://localhost/terminalDb', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => console.log("Se ha conectado correctamente"))
+.catch(() => console.log("Database connection failed"))
 
 // Create an express server and a GraphQL endpoint
 const app = express();
