@@ -3,7 +3,7 @@ const express = require('express');
 const {graphqlHTTP} = require('express-graphql');
 const mongoose = require('mongoose')
 
-mongoose.connect('mongodb://localhost/terminalDb', {
+mongoose.connect('mongodb://localhost/terminalDB', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log("Se ha conectado correctamente"))

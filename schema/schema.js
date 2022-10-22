@@ -1,19 +1,8 @@
 const graphql = require("graphql")
 const {GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLBoolean, GraphQLList, GraphQLID, GraphQLInt} = graphql
 const Course = require("./../models/course")
+const Professor = require("./../models/professor")
 
-// const courses = [
-//     { id: '1', name: "design patterns", languaje: 'c#', date: '2022', professorId: "1"},
-//     { id: '2', name: "POO", languaje: 'Java', date: '2022', professorId: "2"},
-//     { id: '3', name: "Clean Code", languaje: 'GO', date: '2022', professorId: "2"},
-// ]
-
-const professors = [
-    { id: '1', name: "John", age: 23, active: true, date: '2022' },
-    { id: '2', name: "Ray", age: 26, active: true, date: '2022' },
-    { id: '3', name: "Peter", age: 21, active: true, date: '2022' },
-    { id: '4', name: "Matias", age: 56 , active: true, date: '2022' },
-]
 
 
 const users = [
@@ -34,7 +23,7 @@ const CourseType = new GraphQLObjectType({
         professor: {
             type: ProfessorType,
             resolve (parent, args) {
-                return professors.find(x => x.id === parent.professorId)
+                return Professor.findById(parent.professorId)
             }
         }
     })
@@ -51,7 +40,7 @@ const ProfessorType = new GraphQLObjectType({
         courses: {
             type: new GraphQLList(CourseType),
             resolve (parent, args) {
-                return courses.filter(x => x.professorId === parent.id)
+                return Course.find({professorId: parent.id})
             }
         }
     })
@@ -77,14 +66,14 @@ const RootQuery = new GraphQLObjectType({
                 id: {type: GraphQLID}
             },
             resolve(resolve, args) {
-                return courses.find((x) => x.id === args.id)
+                return Course.findById(args.id)
             }
         },
         courses: {
             type: new GraphQLList(CourseType),
             args: {},
             resolve (resolve, args) {
-                return courses
+                return Course.find()
             }
         },
         professor: {
@@ -93,14 +82,15 @@ const RootQuery = new GraphQLObjectType({
                 name: {type: GraphQLID}
             },
             resolve(resolve, args) {
-                return professors.find((x) => x.name === args.name)
+                //return professor.find((x) => x.name === args.name)
+                return Professor.findOne({name: args.name})
             }
         },
         professors: {
             type: new GraphQLList(ProfessorType),
             args: {},
             resolve (resolve, args) {
-                return professors
+                return Professor.find()
             }
         },
         user: {
@@ -115,6 +105,107 @@ const RootQuery = new GraphQLObjectType({
     })
 })
 
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addProfessor: {
+            type: ProfessorType,
+            args: {
+                name: {type: GraphQLString},
+                age: {type: GraphQLInt},
+                active: {type: GraphQLBoolean},
+                date: {type: GraphQLString}
+            },
+            resolve (parent, args) {
+                let professor = new Professor({
+                    name: args.name,
+                    age: args.age,
+                    active: args.active,
+                    date: args.date
+                })
+                return professor.save()
+            }
+        },
+        updateProfessor: {
+            type: ProfessorType,
+            args: {
+                id: {type: GraphQLID},
+                name: {type: GraphQLString},
+                age: {type: GraphQLInt},
+                active: {type: GraphQLBoolean},
+                date: {type: GraphQLString}
+            },
+            resolve (parent, args) {
+                return Professor.findByIdAndUpdate(args.id, args, {new: true})
+            }
+        },
+        deleteProfessor: {
+            type: ProfessorType,
+            args: {
+                id: {type: GraphQLID},
+            },
+            resolve (parent, args) {
+                return Professor.findByIdAndDelete(args.id)
+            }
+        },
+        updateCourse: {
+            type: CourseType,
+            args: {
+                id: {type: GraphQLID},
+                name: {type: GraphQLString},
+                languaje: {type: GraphQLString},
+                date: {type: GraphQLString},
+                professorId: {type: GraphQLID}
+            },
+            resolve (parent, args){
+                return Course.findByIdAndUpdate(args.id, {
+                    name: args.name,
+                    languaje: args.languaje,
+                    date: args.date,
+                    professorId: args.professorId
+                },
+                {new: true})
+            }
+            
+        },
+        deleteCourse: {
+            type: CourseType,
+            args: {
+                id: {type: GraphQLID}
+            },
+            resolve (parent, args){
+                return Course.findByIdAndDelete(args.id)
+            }
+        },
+        deleteAllCourse: {
+            type: CourseType,
+            resolve (parent, args){
+                return Course.deleteMany({})
+            }
+        },
+        addCourse: {
+            type: CourseType,
+            args: {
+                name: {type: GraphQLString},
+                languaje: {type: GraphQLString},
+                date: {type: GraphQLString},
+                professorId: {type: GraphQLID}
+            },
+            resolve(parent, args){
+                let course = new Course({
+                    name: args.name,
+                    languaje: args.languaje,
+                    date: args.date,
+                    professorId: args.professorId
+                })
+                
+                return course.save()
+            }
+        }
+    }
+})
+
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,   
+    mutation: Mutation
 })
